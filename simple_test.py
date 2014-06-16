@@ -8,4 +8,13 @@ child.expect('Please press Enter to activate this console.')
 child.sendline()
 child.expect(r'entering forwarding state') # r'' means raw string - no escape necessary
 child.sendline()
-child.interact()                    # and we should see 'root@OpenWrt:/#'
+print '\n'
+print r'^] (ctrl-]) to end session'
+
+
+print '''
+    Insert ascii art here
+    '''
+
+child.interact(chr(29))                    # and we should see 'root@OpenWrt:/#'
+    # chr(29) is ctrl-]
