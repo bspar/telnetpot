@@ -164,7 +164,7 @@ start_time = 0.0
 def main():
     global server, queuemu, ready, booting, start_time, dequelock, lockuser
     start_time = time.time()
-    server = ThreadedTCPServer(('localhost', 62915), ThreadedTCPRequestHandler)
+    server = ThreadedTCPServer(('0.0.0.0', 62915), ThreadedTCPRequestHandler)
     ip, port = server.server_address
     server_thread = threading.Thread(target=server.serve_forever)
     server_thread.daemon = True
