@@ -51,7 +51,7 @@ class QemuImage(object):
         print '[#] executing: %s' % cmd
         self.router = pexpect.spawn(cmd)
         try:
-            self.router.expect('activate this console.', timeout=40)
+            self.router.expect('activate this console.', timeout=120)
         except:
             print 'Exception expecting \"activate this console\"...'
             print str(self.router)
@@ -60,9 +60,9 @@ class QemuImage(object):
         print '[#] Pressed enter'
         try:
             # Yes, there are three of them
-            self.router.expect('entered forwarding state', timeout=30)
-            self.router.expect('entered forwarding state', timeout=30)
-            self.router.expect('entered forwarding state', timeout=30)
+            self.router.expect('entered forwarding state', timeout=120)
+            self.router.expect('entered forwarding state', timeout=120)
+            self.router.expect('entered forwarding state', timeout=120)
         except:
             print 'Exception expecting \"entered forwarding state\"'
             print str(self.router)
@@ -167,6 +167,9 @@ There are a bunch of things we'll want to do to make the environment look like a
 
 /proc/cpuinfo
 username+password in /etc/passwd
+
+
+refactor expects to expect the string and timeout, taking appropriate action for each event
 
 
 '''
