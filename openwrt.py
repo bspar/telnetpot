@@ -59,8 +59,6 @@ class QemuImage(object):
         self.router.sendline()
         print '[#] Bridging machine'
         self.router.sendline('udhcpc -i br-lan')
-        if self.router.expect(['setting default routers', pexpect.TIMEOUT], timeout=10) == 1:
-            print '[!] Timed out on udhcpc -i br-lan ... oh well, it probably worked'
         try:
             # Yes, there are three of them
             self.router.expect('entered forwarding state', timeout=120)
@@ -69,6 +67,8 @@ class QemuImage(object):
         except:
             print 'Exception expecting \"entered forwarding state\"'
             print str(self.router)
+        if self.router.expect(['setting default routers', pexpect.TIMEOUT], timeout=10) == 1:
+            print '[!] Timed out on udhcpc -i br-lan ... oh well, it probably worked'
         self.router.setecho(False)
         print '[+] boot finished in %s seconds' % str(time.time() - boot_time)
         self.initialized = True
@@ -77,7 +77,6 @@ class QemuImage(object):
 
     def execute(self, cmd):
         self.router.sendline()
-        self.router.expect(self.qemuprompt, timeout=1)
         if cmd == 'poweroff':
             return self.poweroff()
         if cmd == 'exit':
@@ -88,7 +87,7 @@ class QemuImage(object):
 
     def process_output(self, cmd):
         while self.interrupt == 0:
-            timeout = self.router.expect(['\r\n', pexpect.TIMEOUT], timeout=.2)
+            timeout = self.router.expect(['\r\n', pexpect.TIMEOUT], timeout=.2) # gotta find a better way to do this...
             out = self.router.before
             for line in out.split('\r\n'):     # sanitize
                 if cmd in line or 'OpenWrt' in line:
@@ -105,7 +104,8 @@ class QemuImage(object):
                     # TODO: Maybe call a function to check if we should keep looping
                     # hm, maybe I'll just make a garbage collector
 
-                    return 'waiting'
+                    continue    # for now... that means we'll block on waiting for user input
+                    # return 'waiting' # don't want this (yet?)...
         return 'interrupted'
 
     def poweroff(self):
@@ -173,6 +173,6 @@ username+password in /etc/passwd
 
 
 refactor expects to expect the string and timeout, taking appropriate action for each event
-
+process_output: process waiting for user input
 
 '''
