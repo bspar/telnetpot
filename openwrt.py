@@ -57,8 +57,6 @@ class QemuImage(object):
             print str(self.router)
             exit()
         self.router.sendline()
-        print '[#] Bridging machine'
-        self.router.sendline('udhcpc -i br-lan')
         try:
             # Yes, there are three of them
             self.router.expect('entered forwarding state', timeout=120)
@@ -67,6 +65,8 @@ class QemuImage(object):
         except:
             print 'Exception expecting \"entered forwarding state\"'
             print str(self.router)
+        print '[#] Bridging machine'
+        self.router.sendline('udhcpc -i br-lan')
         if self.router.expect(['setting default routers', pexpect.TIMEOUT], timeout=10) == 1:
             print '[!] Timed out on udhcpc -i br-lan ... oh well, it probably worked'
         self.router.setecho(False)
