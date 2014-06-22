@@ -28,7 +28,7 @@ class QemuImage(object):
         if self.name == '':   # we'll create a new one
             # self.name = str(int(time.time())) + random_string() + '.qcow2'  # timestampSTRING.qcow2
             self.name = '%s-%s.qcow2' % (str(int(time.time())), random_string())
-            cmd = 'qemu-img create -b base.qcow2 -f qcow2 %s' % self.name
+            cmd = 'qemu-img create -b base.qcow2 -f qcow2 -o size=1G %s' % self.name
             print '[#] running command: ' + cmd
             creator = pexpect.spawn(cmd)
             creator.expect(pexpect.EOF)
@@ -47,7 +47,7 @@ class QemuImage(object):
     def boot(self):
         boot_time = time.time()
         print '[#] Now we wait...'
-        cmd = 'qemu-system-i386 -net nic,model=ne2k_pci -nographic -m %sM -hda %s' % (self.memory, self.name)
+        cmd = 'qemu-system-i386 -nographic -m %sM -hda %s' % (self.memory, self.name)
         print '[#] executing: %s' % cmd
         self.router = pexpect.spawn(cmd)
         try:
@@ -57,7 +57,10 @@ class QemuImage(object):
             print str(self.router)
             exit()
         self.router.sendline()
-        print '[#] Pressed enter'
+        print '[#] Bridging machine'
+        self.router.sendline('udhcpc -i br-lan')
+        if self.router.expect(['setting default routers', pexpect.TIMEOUT], timeout=10) == 1:
+            print '[!] Timed out on udhcpc -i br-lan ... oh well, it probably worked'
         try:
             # Yes, there are three of them
             self.router.expect('entered forwarding state', timeout=120)
