@@ -144,7 +144,7 @@ def start_qemu():
     print '[#] Creating new qemu instance'
     instance = QemuImage()
     instance.boot()
-    time.sleep(25)       # it takes a little to "truly" be ready...
+    time.sleep(5)       # it takes a little to "truly" be ready...
     qlock('start_qemu')
     queuemu.append(instance)    # we should keep enough alive that 'sleep(3)' doesn't matter
     qrelease()
