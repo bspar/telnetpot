@@ -69,6 +69,8 @@ class QemuImage(object):
         self.router.sendline('udhcpc -i br-lan')
         if self.router.expect(['setting default routers', pexpect.TIMEOUT], timeout=10) == 1:
             print '[!] Timed out on udhcpc -i br-lan ... oh well, it probably worked'
+        self.router.sendline()
+        self.route.expect(self.qemuprompt)
         self.router.setecho(False)
         print '[+] boot finished in %s seconds' % str(time.time() - boot_time)
         self.initialized = True
@@ -174,5 +176,6 @@ username+password in /etc/passwd
 
 refactor expects to expect the string and timeout, taking appropriate action for each event
 process_output: process waiting for user input
+make ^C better
 
 '''
